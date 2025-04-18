@@ -1,0 +1,18 @@
+com.example.urlshortener
+├── model
+│   └── UrlMapping.java
+│
+├── repository
+│   ├── UrlMappingRepository.java
+│   └── InMemoryUrlMappingRepository.java
+│
+├── service
+│   └── UrlShortenerService.java
+│
+├── generator
+│   ├── CodeGenerator.java
+│   └── Base62CodeGenerator.java
+│   └── HashCodeGenerator.java          // (optional, if you want hash-based)
+│
+└── app
+    └── UrlShortenerApp.java           // Entry point / main method
