@@ -1,18 +1,67 @@
-com.example.urlshortener
-├── model
-│   └── UrlMapping.java
-│
-├── repository
-│   ├── UrlMappingRepository.java
-│   └── InMemoryUrlMappingRepository.java
-│
-├── service
-│   └── UrlShortenerService.java
-│
-├── generator
-│   ├── CodeGenerator.java
-│   └── Base62CodeGenerator.java
-│   └── HashCodeGenerator.java          // (optional, if you want hash-based)
-│
-└── app
-    └── UrlShortenerApp.java           // Entry point / main method
+                    +------------------------+
+                    |      UrlMapping        |
+                    +------------------------+
+                    | - shortCode: String    |
+                    | - originalUrl: String  |
+                    | - expiresAt: LocalDateTime |
+                    +------------------------+
+                    | + getShortCode(): String  |
+                    | + getOriginalUrl(): String|
+                    | + getExpiresAt(): LocalDateTime |
+                    | + isExpired(): boolean   |
+                    +------------------------+
+
+                    +------------------------+
+                    |  UrlMappingRepository  |<<interface>>
+                    +------------------------+
+                    | + save(mapping: UrlMapping): void  |
+                    | + findByShortCode(shortCode: String): Optional<UrlMapping> |
+                    | + findByOriginalUrl(originalUrl: String): Optional<UrlMapping> |
+                    | + exists(shortCode: String): boolean |
+                    | + remove(shortCode: String): boolean |
+                    +------------------------+
+                             ▲
+                             |
+                             |
+     +------------------------------------------------+
+     |          InMemoryUrlMappingRepository          |
+     +------------------------------------------------+
+     | - urlStorage: ConcurrentHashMap<String, UrlMapping> |
+     | - originalUrlStorage: ConcurrentHashMap<String, UrlMapping> |
+     +------------------------------------------------+
+     | + save(mapping: UrlMapping): void              |
+     | + findByShortCode(shortCode: String): Optional<UrlMapping> |
+     | + findByOriginalUrl(originalUrl: String): Optional<UrlMapping> |
+     | + exists(shortCode: String): boolean           |
+     | + remove(shortCode: String): boolean           |
+     +------------------------------------------------+
+
+                    +------------------------+
+                    |     CodeGenerator      |<<interface>>
+                    +------------------------+
+                    | + generateCode(): String |
+                    +------------------------+
+                           ▲            ▲
+                           |            |
+     +--------------------------------+ +---------------------------+
+     |     Base62CodeGenerator        | |      HashCodeGenerator    |
+     +--------------------------------+ +---------------------------+
+     | + generateCode(): String       | | + generateCode(): String  |
+     +--------------------------------+ +---------------------------+
+
+                    +-------------------------------------------+
+                    |          UrlShortenerService              |
+                    +-------------------------------------------+
+                    | - urlMappingRepository: UrlMappingRepository |
+                    | - codeGenerator: CodeGenerator               |
+                    | - baseUrl: String                            |
+                    +-------------------------------------------+
+                    | + shortenUrl(originalUrl: String, expiresAt: Optional<LocalDateTime>): String |
+                    | + expandUrl(shortCode: String): Optional<String>                                |
+                    +-------------------------------------------+
+
+                    +------------------------+
+                    |    UrlShortenerApp     |
+                    +------------------------+
+                    | + main(args: String[]): void |
+                    +------------------------+
