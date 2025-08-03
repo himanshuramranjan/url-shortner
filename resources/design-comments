@@ -1,0 +1,22 @@
+> Clean up strategy for expired data
+
+Present Multiple Solutions & Trade-Offs
+
+
+Option A: Lazy Cleanup (On Access)
+How: When someone tries to access a short code (expandUrl), check expiry. If expired, remove it.
+Pros: Easy to implement, no background thread.
+Cons: Expired entries remain if never accessed again.
+When: Good for small apps, demos, or when traffic is frequent enough that expired ones are naturally cleaned.
+
+Option B: Scheduled Cleanup (Background Thread)
+How: Use ScheduledExecutorService to periodically scan and remove expired entries (e.g., every 1 hour).
+Pros: Ensures memory is cleaned proactively.
+Cons: Slight overhead due to periodic scanning.
+When: Production-like systems with long-running JVM.
+
+Option C: Use a Cache Library with TTL (e.g., Caffeine, Guava)
+How: Offload expiry and cleanup to a cache library supporting TTL.
+Pros: Highly optimized, automatic cleanup, proven solution.
+Cons: Adds external dependency.
+When: Enterprise-grade system where performance and memory are critical.
