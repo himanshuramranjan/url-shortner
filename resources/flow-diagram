@@ -1,0 +1,42 @@
+          ┌─────────────────────┐
+          │  Client / Main App  │
+          └─────────┬──────────┘
+                    │
+                    v
+          ┌─────────────────────┐
+          │ UrlShortenerService │
+          └─────────┬──────────┘
+                    │
+         ┌──────────┴─────────────┐
+         │                         │
+   shortenUrl()               expandUrl()
+         │                         │
+         v                         v
+┌─────────────────┐        ┌─────────────────────┐
+│ Check if URL    │        │ Find mapping by     │
+│ exists by URL   │        │ shortCode           │
+└─────┬───────────┘        └─────────┬──────────┘
+      │                              │
+ Exists?                        Exists?
+      │                              │
+  ┌───┴─────┐                        │
+  │         │                        │
+Expired?   No expired                │
+  │         │                        │
+  │   Return existing code           │
+  │                                   │
+Remove expired mapping                │
+Generate unique shortCode             │
+(do...while uniqueness check)         │
+Save new UrlMapping                   │
+Return short URL                      │
+                                      │
+                              ┌───────┴───────┐
+                              │ Mapping found │
+                              └───────┬───────┘
+                                  Expired?
+                              ┌─────────┴─────────┐
+                              │                   │
+                         Remove mapping       Return original URL
+                         (lazy cleanup)       to client
+                         Return empty
